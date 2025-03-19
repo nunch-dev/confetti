@@ -1,16 +1,18 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import confetti from "canvas-confetti";
 import { Button } from "@/components/ui/button.tsx";
 
+const audio = new Audio("/sound.mp3");
 export const App: FC = () => {
+  const [stop, setStop] = useState(false);
+
   function fire(particleRatio: number, opts) {
     confetti({
       ...opts,
       origin: { y: 0.5 },
-      particleCount: Math.floor(particleRatio * 500),
+      particleCount: Math.floor(particleRatio * 2000),
     });
   }
-
   function goodjob() {
     const defaults = {
       spread: 360,
@@ -30,28 +32,38 @@ export const App: FC = () => {
       });
     }
 
-    for (let i = 0; i < 1300; i += 100) {
+    for (let i = 0; i < 2000; i += 100) {
       setTimeout(shoot, i);
     }
   }
-
   const onClick = () => {
-    const ratio = Math.random() * 0.5 + 0.1;
+    const ratio = Math.random() * 0.2 + 0.5;
     const spread = Math.random() * 60 + 120;
     fire(ratio, {
       spread,
-      startVelocity: 30,
+      startVelocity: 50,
     });
 
-    if (ratio >= 0.55 && spread >= 170) {
+    if (ratio >= 0.65 && spread >= 170) {
+      setStop(true);
       goodjob();
+      startSound();
+      setTimeout(() => setStop(false), 2000);
     }
   };
+  function startSound() {
+    audio.play();
+  }
 
   return (
     <div className={"w-screen h-screen grid place-items-center"}>
-      <Button onClick={onClick} className={"cursor-pointer"} size={"lg"}>
-        🎉 &nbsp; Ready ?
+      <Button
+        onClick={onClick}
+        className={"cursor-pointer"}
+        size={"lg"}
+        disabled={stop}
+      >
+        🎉 {!stop ? "  Ready ?" : ""}
       </Button>
     </div>
   );
